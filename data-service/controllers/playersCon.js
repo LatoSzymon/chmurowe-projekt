@@ -41,10 +41,11 @@ const dodajGracza = async (req, res) => {
         }
 
         if (team) {
-            const existingTeam = await Team.findById(team);
+            const existingTeam = await Team.findOne({name: team});
             if (!existingTeam) {
                 return res.status(400).json({ message: "Podany zespół nie istnieje" });
             }
+            team = existingTeam._id;
         }
 
         const newPlayer = new Player({ name, nickname, role, age, country, team, avatar });

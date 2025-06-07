@@ -1,21 +1,24 @@
 version: "3.8"
 
 services:
-  backend:
-    build:
-      context: ./backend
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/esport
-      - CHOKIDAR_USEPOLLING=true
-    volumes:
-      - ./backend:/app
+  data-service:
+    build: ./data-service
     ports:
       - "3000:3000"
-      - "9229:9229"
+    volumes:
+      - ./data-service:/app
     depends_on:
       - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo-chmury:27017/esport
     restart: always
-
+    networks:
+      - esportlol
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 2
 
   mongo:
     image: mongo:6
@@ -25,6 +28,29 @@ services:
     volumes:
       - mongo_data:/data/db
     restart: always
+    networks:
+      - esportlol
+
+
+  analytics-service:
+    build: ./analytics-service
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./analytics-service:/app
+    restart: always
+    depends_on:
+      - mongo
+    networks:
+      - esportlol
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 2
+
+
+
 
   frontend:
     build:
@@ -32,8 +58,11 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      - analytics-service
+      - data-service
     restart: always
+    networks:
+    - esportlol
 
   frontend-dev:
     build:
@@ -51,9 +80,15 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - backend
+      - analytics-service
+      - data-service
+    networks:
+      - esportlol
 
 
 
 volumes:
   mongo_data:
+
+networks:
+  esportlol:

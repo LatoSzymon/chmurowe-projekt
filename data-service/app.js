@@ -17,6 +17,7 @@ app.get("/status", (req, res) => {
 
 app.use("/api/players", playersRoutes);
 app.use("/api/teams", teamsRoutes);
+app.get("/health", (req, res) => res.sendStatus(200));
 
 const PORT = process.env.PORT || 3000;
 mongo.connect(process.env.MONGO_URI || "mongodb://mongo:27017/esport", {
@@ -30,3 +31,4 @@ mongo.connect(process.env.MONGO_URI || "mongodb://mongo:27017/esport", {
 }).catch(err => {
     console.error("Coś tu poszło mocno nie tak, panie", err);
 });
+
