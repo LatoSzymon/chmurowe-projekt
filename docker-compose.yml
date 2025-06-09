@@ -1,8 +1,8 @@
-version: "3.8"
-
 services:
   data-service:
     build: ./data-service
+    container_name: data-service
+    image: latomierz/data-service:latest
     ports:
       - "3000:3000"
     volumes:
@@ -34,12 +34,15 @@ services:
 
   analytics-service:
     build: ./analytics-service
+    container_name: analytics
+    image: latomierz/analytics-service:latest
     ports:
       - "4000:4000"
     volumes:
       - ./analytics-service:/app
     restart: always
     depends_on:
+      - data-service
       - mongo
     networks:
       - esportlol
@@ -49,12 +52,14 @@ services:
       timeout: 10s
       retries: 2
 
-
-
-
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
+    image: latomierz/frontend:latest
+    container_name: frontend
+    env_file:
+      - .env
     ports:
       - "80:80"
     depends_on:
@@ -62,29 +67,7 @@ services:
       - data-service
     restart: always
     networks:
-    - esportlol
-
-  frontend-dev:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
-      - PORT=8080
-      - REACT_APP_API=http://backend:3000/api
-    ports:
-      - "8080:8080"
-    depends_on:
-      - analytics-service
-      - data-service
-    networks:
       - esportlol
-
 
 
 volumes:

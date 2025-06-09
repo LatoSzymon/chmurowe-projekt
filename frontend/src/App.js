@@ -3,46 +3,141 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 import AddPlayer from './pages/AddPlayer';
+import AddTeam from './pages/AddTeam';
+import TeamList from './pages/TeamList';
+import StatsPage from './pages/StatsPage';
+
 
 function PlayerList() {
   const [players, setPlayers] = React.useState([]);
+  const [expanded, setExpanded] = React.useState(null);
+  const [editingId, setEditingId] = React.useState(null);
+  const [editForm, setEditForm] = React.useState({});
 
   React.useEffect(() => {
-    fetch("http://localhost:3000/api/players?page=1&limit=20")
+    fetch(`/api/players?page=1&limit=20`)
       .then(res => res.json())
       .then(data => setPlayers(data.players))
       .catch(err => console.error("Problem z aportowaniem ~woof~", err));
   }, []);
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Na pewno chcesz usunąć tego gracza?")) return;
+    try {
+      const res = await fetch(`/api/players/${id}`, { method: "DELETE" });
+      if (res.ok) setPlayers(players.filter(p => p._id !== id));
+      else alert("Błąd: " + (await res.json()).message);
+    } catch (err) {
+      console.error("Błąd przy usuwaniu gracza", err);
+    }
+  };
+
+  const startEdit = (player) => {
+    setEditingId(player._id);
+    setEditForm({
+      name: player.name || "",
+      nickname: player.nickname || "",
+      role: player.role || "",
+      age: player.age || "",
+      country: player.country || "",
+      team: player.team?.short || "",
+      avatar: player.avatar || ""
+    });
+  };
+
+  const handleEditChange = (e) => {
+    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  };
+
+  const submitEdit = async (id) => {
+    try {
+      const res = await fetch(`/api/players/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm)
+      });
+      const updated = await res.json();
+      if (res.ok) {
+        setPlayers(players.map(p => p._id === id ? updated : p));
+        setEditingId(null);
+        setExpanded(null);
+      } else {
+        alert("Błąd: " + updated.message);
+      }
+    } catch (err) {
+      console.error("Błąd przy edycji gracza", err);
+    }
+  };
+
+  const roles = ["top", "jungle", "mid", "bot", "support"];
+
   return (
-    <div>
+    <div style={{ padding: "2rem" }}>
       <h1>Lista Graczy</h1>
-      <ul>
+      <div className="players-grid">
         {players.map((p) => (
-          <li key={p._id} style={{ marginBottom: "1rem", listStyle: "none" }}>
-            <img
-              src={p.avatar || "/placeholder.png"}
-              alt={p.nickname}
-              style={{ width: "100px", objectFit: "cover", borderRadius: "8px" }}
-            />
-            <strong style={{ marginLeft: "0.5rem" }}>{p.nickname}</strong> – {p.role} w {p.team?.short || p.team}
-          </li>
+          <div className="player-card" key={p._id}>
+            <img src={p.avatar || "/nerd.png"} alt={p.nickname} className="avatar" />
+            <h3>{p.nickname}</h3>
+            <button onClick={() => setExpanded(expanded === p._id ? null : p._id)}>
+              {expanded === p._id ? "▲" : "▼"}
+            </button>
+
+            {expanded === p._id && (
+              editingId === p._id ? (
+                <div className="player-details">
+                  <input type="text" name="name" value={editForm.name} onChange={handleEditChange} placeholder="Imię" />
+                  <input type="text" name="nickname" value={editForm.nickname} onChange={handleEditChange} placeholder="Ksywka" />
+                  <select name="role" value={editForm.role} onChange={handleEditChange}>
+                    <option value="">Rola</option>
+                    {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                  <input type="number" name="age" value={editForm.age} onChange={handleEditChange} placeholder="Wiek" />
+                  <input type="text" name="country" value={editForm.country} onChange={handleEditChange} placeholder="Kraj" />
+                  <input type="text" name="team" value={editForm.team} onChange={handleEditChange} placeholder="Skrót drużyny" />
+                  <input type="text" name="avatar" value={editForm.avatar} onChange={handleEditChange} placeholder="URL avataru" />
+                  <button onClick={() => submitEdit(p._id)}>Zapisz</button>
+                  <button onClick={() => setEditingId(null)}>Anuluj</button>
+                </div>
+              ) : (
+                <div className="player-details">
+                  <p><strong>Imię i nazwisko:</strong> {p.name}</p>
+                  <p><strong>Rola:</strong> {p.role}</p>
+                  <p><strong>Wiek:</strong> {p.age}</p>
+                  <p><strong>Kraj:</strong> {p.country}</p>
+                  <p><strong>Drużyna:</strong> {p.team?.name || p.team?.short || "[brak]"}</p>
+                  <button className='usuwator' onClick={() => handleDelete(p._id)} style={{ border: "none", cursor: "pointer", borderRadius: "50%", width: "30px", height: "30px" }}>
+                    <img src='/bin.png' alt='Usuń' style={{width: "30px", height: "30px", color: "white", backgroundColor: "white", padding: "0", margin: "0", borderRadius: "50px"}}></img>
+                  </button>
+                  <button onClick={() => startEdit(p)} className='edycja'>Edytuj</button>
+                </div>
+              )
+            )}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
 
+
 function App() {
   return (
     <Router>
-      <div className="App" style={{ padding: "2rem" }}>
+      <div className="App">
         <nav style={{ marginBottom: "2rem" }}>
-          <Link to="/"> Strona główna</Link> | <Link to="/add-player">Dodaj gracza</Link>
+          <Link to="/" className='nav-link'> Strona główna</Link> |
+          <Link to="/add-player" className='nav-link'> Dodaj gracza</Link> |
+          <Link to="/add-team" className='nav-link'> Dodaj team do bazy</Link> |
+          <Link to="/teams" className='nav-link'> Lista drużyn</Link> |
+          <Link to="/stats" className='nav-link'> Statystyki</Link>
         </nav>
         <Routes>
           <Route path="/" element={<PlayerList />} />
           <Route path="/add-player" element={<AddPlayer />} />
+          <Route path='/add-team' element={<AddTeam />} />
+          <Route path='/teams' element={<TeamList />} />
+          <Route path='/stats' element={<StatsPage />} />
         </Routes>
       </div>
     </Router>
@@ -50,3 +145,4 @@ function App() {
 }
 
 export default App;
+

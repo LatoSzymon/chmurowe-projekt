@@ -2,7 +2,7 @@ const Team = require("../models/team");
 
 const dodajTeam = async (req, res) => {
     try {
-        const { name, short, region, founded } = req.body;
+        const { name, short, region, founded, logo } = req.body;
 
         if (!name || !short || !region) {
             return res.status(400).json({ message: "Brakuje wymaganych pól: name, short, region" });
@@ -13,7 +13,7 @@ const dodajTeam = async (req, res) => {
             return res.status(409).json({ message: "Zespół z takim skrótem już istnieje" });
         }
 
-        const team = new Team({ name, short, region, founded });
+        const team = new Team({ name, short, region, founded, logo });
         const saved = await team.save();
         res.status(201).json(saved);
     } catch (err) {
@@ -45,5 +45,16 @@ const usunTeam = async (req, res) => {
     }
 };
 
-module.exports = { dodajTeam, pobierzTeamy, usunTeam };
+const pobierzTeamPoId = async (req, res) => {
+    try {
+        const team = await Team.findById(req.params.id);
+        if (!team) return res.status(404).json({ message: "Nie znaleziono drużyny" });
+        res.json(team);
+    } catch (err) {
+        res.status(500).json({ message: "Błąd serwera", error: err.message });
+    }
+};
+
+
+module.exports = { dodajTeam, pobierzTeamy, usunTeam, pobierzTeamPoId };
 

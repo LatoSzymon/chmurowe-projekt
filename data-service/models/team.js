@@ -13,6 +13,9 @@ const teamSchema = new mongo.Schema({
     },
     founded: {
         type: Number
+    },
+    logo: {
+        type: String
     }
 });
 

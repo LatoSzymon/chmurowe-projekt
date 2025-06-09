@@ -5,9 +5,248 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background-color: black;
+  color: white;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.App {
+  padding: none;
+}
+
+nav {
+  background-color: aqua;
+  color: white;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  width: 100vw;
+}
+
+.nav-link {
+    text-decoration: none;
+    font-weight: bold;
+    color: inherit;
+    padding: 10px;
+    text-shadow: 2px 2px #000000;
+}
+
+.player {
+  background-color: darkgray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  width: 500px;
+}
+
+.avatar {
+  width: 300px;
+  height: 200px;
+  border-radius: 10px;
+  border: 5px solid aqua;
+}
+
+.usuwator {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 3rem;
+  padding: 2rem;
+  align-items: start;
+}
+
+.player-card {
+  background-color: #121212;
+  border: 2px solid aqua;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 0 10px rgba(0,255,255,0.2);
+  transition: height 0.8s ease;
+}
+
+
+.player-card h3 {
+  margin: 0.5rem 0;
+}
+
+.player-card button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: white;
+  cursor: pointer;
+}
+
+.player-details {
+  margin-top: 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  background-color: #1e1e1e;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.team {
+  display: flex;
+  background-color: #1e1e1e;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 1500px;
+  border: 3px solid aqua;
+  box-shadow: 0 0 10px rgba(0,255,255,0.2);
+}
+
+
+.teamy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.edycja {
+  padding: 8px 14px;
+  margin-top: 10px;
+  font-weight: bold;
+  background-color: #00aaff;
+  color: black;
+  border: 2px solid #00ffff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 150px;
+}
+
+.edycja:hover {
+  background-color: #0088cc;
+  color: white;
+}
+
+form {
+  background-color: #1c1c1c;
+  padding: 2rem;
+  border-radius: 10px;
+  border: 2px solid aqua;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+form input,
+form select,
+form textarea {
+  background-color: #111;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  transition: border 0.2s ease;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+  border-color: aqua;
+  outline: none;
+}
+
+form button {
+  background-color: #00ffff;
+  color: black;
+  font-weight: bold;
+  border: none;
+  padding: 0.6rem;
+  margin-top: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #00cccc;
+}
+
+.stats-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stats-page section {
+  margin-bottom: 3rem;
+}
+
+.stats-item {
+  background-color: #1a1a1a;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.25);
+  width: 280px;
+  min-height: 60px;
+  text-align: left;
+  transition: transform 0.2s;
+  border: 1px solid #00ffff50;
+}
+
+.stats-item:hover {
+  transform: scale(1.03);
+}
+
+.role-icon,
+.team-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.label {
+  text-transform: capitalize;
+  font-weight: bold;
+  color: #00ffff;
 }

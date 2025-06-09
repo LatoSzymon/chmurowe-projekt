@@ -20,7 +20,7 @@ const AddPlayer = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3000/api/players", {
+      const res = await fetch(`/api/players`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -46,7 +46,7 @@ const AddPlayer = () => {
         </select>
         <input type="number" name="age" placeholder="Wiek" value={form.age} onChange={handleChange} />
         <input type="text" name="country" placeholder="Kraj" value={form.country} onChange={handleChange} />
-        <input type="text" name="team" placeholder="ID drużyny (tymczasowo)" value={form.team} onChange={handleChange} />
+        <input type="text" name="team" placeholder="Drużyna (skrót)" value={form.team} onChange={handleChange} />
         <input type="text" name="avatar" placeholder="URL zdjęcia" value={form.avatar} onChange={handleChange} />
         <button type="submit">Dodaj</button>
       </form>
