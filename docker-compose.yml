@@ -43,7 +43,6 @@ services:
     restart: always
     depends_on:
       - data-service
-      - mongo
     networks:
       - esportlol
     healthcheck:
