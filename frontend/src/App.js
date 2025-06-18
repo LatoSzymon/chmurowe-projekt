@@ -1,30 +1,42 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { useKeycloak } from '@react-keycloak/web';
 
 import AddPlayer from './pages/AddPlayer';
 import AddTeam from './pages/AddTeam';
 import TeamList from './pages/TeamList';
 import StatsPage from './pages/StatsPage';
 
+const RequireRole = ({ role, children }) => {
+  const { keycloak } = useKeycloak();
+  const hasRole = keycloak?.tokenParsed?.realm_access?.roles?.includes(role);
+  return hasRole ? children : <p>Brak dostępu – wymagana rola: {role}</p>;
+};
 
 function PlayerList() {
+  const { keycloak } = useKeycloak();
   const [players, setPlayers] = React.useState([]);
   const [expanded, setExpanded] = React.useState(null);
   const [editingId, setEditingId] = React.useState(null);
   const [editForm, setEditForm] = React.useState({});
 
   React.useEffect(() => {
-    fetch(`/api/players?page=1&limit=20`)
+    fetch(`/api/players?page=1&limit=20`, {
+      headers: { Authorization: `Bearer ${keycloak.token}` }
+    })
       .then(res => res.json())
       .then(data => setPlayers(data.players))
       .catch(err => console.error("Problem z aportowaniem ~woof~", err));
-  }, []);
+  }, [keycloak.token]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Na pewno chcesz usunąć tego gracza?")) return;
     try {
-      const res = await fetch(`/api/players/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/players/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${keycloak.token}` }
+      });
       if (res.ok) setPlayers(players.filter(p => p._id !== id));
       else alert("Błąd: " + (await res.json()).message);
     } catch (err) {
@@ -53,7 +65,10 @@ function PlayerList() {
     try {
       const res = await fetch(`/api/players/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${keycloak.token}`
+        },
         body: JSON.stringify(editForm)
       });
       const updated = await res.json();
@@ -82,7 +97,6 @@ function PlayerList() {
             <button onClick={() => setExpanded(expanded === p._id ? null : p._id)}>
               {expanded === p._id ? "▲" : "▼"}
             </button>
-
             {expanded === p._id && (
               editingId === p._id ? (
                 <div className="player-details">
@@ -106,9 +120,7 @@ function PlayerList() {
                   <p><strong>Wiek:</strong> {p.age}</p>
                   <p><strong>Kraj:</strong> {p.country}</p>
                   <p><strong>Drużyna:</strong> {p.team?.name || p.team?.short || "[brak]"}</p>
-                  <button className='usuwator' onClick={() => handleDelete(p._id)} style={{ border: "none", cursor: "pointer", borderRadius: "50%", width: "30px", height: "30px" }}>
-                    <img src='/bin.png' alt='Usuń' style={{width: "30px", height: "30px", color: "white", backgroundColor: "white", padding: "0", margin: "0", borderRadius: "50px"}}></img>
-                  </button>
+                  <button className='usuwator' onClick={() => handleDelete(p._id)}>🗑</button>
                   <button onClick={() => startEdit(p)} className='edycja'>Edytuj</button>
                 </div>
               )
@@ -120,8 +132,13 @@ function PlayerList() {
   );
 }
 
-
 function App() {
+  const { keycloak } = useKeycloak();
+
+  if (!keycloak?.authenticated) {
+    return <p>Logowanie...</p>;
+  }
+
   return (
     <Router>
       <div className="App">
@@ -130,14 +147,15 @@ function App() {
           <Link to="/add-player" className='nav-link'> Dodaj gracza</Link> |
           <Link to="/add-team" className='nav-link'> Dodaj team do bazy</Link> |
           <Link to="/teams" className='nav-link'> Lista drużyn</Link> |
-          <Link to="/stats" className='nav-link'> Statystyki</Link>
+          <Link to="/stats" className='nav-link'> Statystyki</Link> |
+          <button onClick={() => keycloak.logout()} className='nav-link'>Wyloguj</button>
         </nav>
         <Routes>
           <Route path="/" element={<PlayerList />} />
-          <Route path="/add-player" element={<AddPlayer />} />
-          <Route path='/add-team' element={<AddTeam />} />
-          <Route path='/teams' element={<TeamList />} />
-          <Route path='/stats' element={<StatsPage />} />
+          <Route path="/add-player" element={<RequireRole role="admin"><AddPlayer /></RequireRole>} />
+          <Route path="/add-team" element={<RequireRole role="admin"><AddTeam /></RequireRole>} />
+          <Route path="/teams" element={<TeamList />} />
+          <Route path="/stats" element={<StatsPage />} />
         </Routes>
       </div>
     </Router>
@@ -145,4 +163,3 @@ function App() {
 }
 
 export default App;
-

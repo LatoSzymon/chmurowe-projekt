@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useKeycloak } from '@react-keycloak/web';
 
 function StatsPage() {
+  const { keycloak } = useKeycloak();
   const [roles, setRoles] = useState({});
   const [orphans, setOrphans] = useState([]);
   const [teamsWithoutPlayers, setTeamsWithoutPlayers] = useState([]);
@@ -8,12 +10,17 @@ function StatsPage() {
   const [teamCounts, setTeamCounts] = useState({});
 
   useEffect(() => {
-    fetch("/stats/roles").then(res => res.json()).then(setRoles);
-    fetch("/stats/orphans/players").then(res => res.json()).then(data => setOrphans(data.players || []));
-    fetch("/stats/orphans/teams").then(res => res.json()).then(data => setTeamsWithoutPlayers(data.teams || []));
-    fetch("/stats/countries").then(res => res.json()).then(setCountries);
-    fetch("/stats/teams/count").then(res => res.json()).then(setTeamCounts);
-  }, []);
+    fetch("/stats/roles", { headers: { Authorization: `Bearer ${keycloak.token}` } })
+      .then(res => res.json()).then(setRoles);
+    fetch("/stats/orphans/players", { headers: { Authorization: `Bearer ${keycloak.token}` } })
+      .then(res => res.json()).then(data => setOrphans(data.players || []));
+    fetch("/stats/orphans/teams", { headers: { Authorization: `Bearer ${keycloak.token}` } })
+      .then(res => res.json()).then(data => setTeamsWithoutPlayers(data.teams || []));
+    fetch("/stats/countries", { headers: { Authorization: `Bearer ${keycloak.token}` } })
+      .then(res => res.json()).then(setCountries);
+    fetch("/stats/teams/count", { headers: { Authorization: `Bearer ${keycloak.token}` } })
+      .then(res => res.json()).then(setTeamCounts);
+  }, [keycloak.token]);
 
   return (
     <div className="stats-page">

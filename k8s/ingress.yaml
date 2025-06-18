@@ -5,7 +5,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - http:
+    - host: localhost
+      http:
         paths:
           - path: /api
             pathType: Prefix
@@ -14,6 +15,7 @@ spec:
                 name: data-service
                 port:
                   number: 3000
+
           - path: /stats
             pathType: Prefix
             backend:
@@ -21,6 +23,15 @@ spec:
                 name: analytics-service
                 port:
                   number: 4000
+
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+
           - path: /
             pathType: Prefix
             backend:

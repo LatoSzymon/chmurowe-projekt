@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from "react";
+import { useKeycloak } from '@react-keycloak/web';
 
 const TeamList = () => {
+  const { keycloak } = useKeycloak();
+  const isAdmin = keycloak?.tokenParsed?.realm_access?.roles?.includes("admin");
+
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/teams`)
+    fetch(`/api/teams`, {
+      headers: { Authorization: `Bearer ${keycloak.token}` }
+    })
       .then((res) => res.json())
       .then((data) => setTeams(data))
       .catch((err) => console.error("Błąd przy pobieraniu drużyn", err));
-  }, []);
+  }, [keycloak.token]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Na pewno usunąć tę drużynę?")) return;
     try {
       const res = await fetch(`/api/teams/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${keycloak.token}` }
       });
       if (res.ok) {
         setTeams(teams.filter((t) => t._id !== id));
@@ -44,12 +51,14 @@ const TeamList = () => {
             <div style={{ flexGrow: 1 }}>
               <strong>{t.name}</strong> ({t.short}) – {t.region} {t.founded ? `(zał. ${t.founded})` : ""}
             </div>
-            <button
-              onClick={() => handleDelete(t._id)}
-              style={{ border: "none", cursor: "pointer"}} className="usuwator"
-            >
-              <img src="/bin.png" alt="Usuń" style={{ width: "30px", height: "30px" }} />
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => handleDelete(t._id)}
+                style={{ border: "none", cursor: "pointer" }} className="usuwator"
+              >
+                <img src="/bin.png" alt="Usuń" style={{ width: "30px", height: "30px" }} />
+              </button>
+            )}
           </li>
         ))}
       </ul>

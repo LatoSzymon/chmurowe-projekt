@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useKeycloak } from '@react-keycloak/web';
 
 const AddTeam = () => {
+  const { keycloak } = useKeycloak();
+
   const [form, setForm] = useState({
     name: "",
     short: "",
@@ -18,13 +21,16 @@ const AddTeam = () => {
     try {
       const res = await fetch(`/api/teams`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${keycloak.token}`
+        },
         body: JSON.stringify(form)
       });
       const data = await res.json();
       if (res.ok) {
         alert("Dodano drużynę!");
-        setForm({ name: "", short: "", region: "", founded: "" });
+        setForm({ name: "", short: "", region: "", founded: "", logo: "" });
       } else {
         alert("Błąd: " + data.message);
       }

@@ -57,8 +57,6 @@ services:
       dockerfile: Dockerfile
     image: latomierz/frontend:latest
     container_name: frontend
-    env_file:
-      - .env
     ports:
       - "80:80"
     depends_on:
