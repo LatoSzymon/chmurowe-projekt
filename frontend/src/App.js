@@ -158,7 +158,7 @@ function App() {
           )}
 
           <Link to="/teams" className='nav-link'> Lista drużyn</Link> |
-          <Link to="/stats" className='nav-link'> Statystyki</Link> |
+          <Link to="/statistics" className='nav-link'> Statystyki</Link> |
           {keycloak.tokenParsed?.realm_access?.roles.includes("admin") && (
             <Link to="/admin" className='nav-link'> Panel Admina</Link>
           )}
