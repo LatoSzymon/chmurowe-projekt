@@ -20,6 +20,8 @@ const getOrphanTeams = async (req, res) => {
   }
 };
 
+//kinderki <3
+
 const getPlayerCountriesStats = async (req, res) => {
   try {
     const response = await axios.get("http://data-service:3000/api/players?page=1&limit=1000");

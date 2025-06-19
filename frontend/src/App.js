@@ -7,6 +7,7 @@ import AddPlayer from './pages/AddPlayer';
 import AddTeam from './pages/AddTeam';
 import TeamList from './pages/TeamList';
 import StatsPage from './pages/StatsPage';
+import AdminPanel from './pages/AdminPage';
 
 const RequireRole = ({ role, children }) => {
   const { keycloak } = useKeycloak();
@@ -120,8 +121,13 @@ function PlayerList() {
                   <p><strong>Wiek:</strong> {p.age}</p>
                   <p><strong>Kraj:</strong> {p.country}</p>
                   <p><strong>Drużyna:</strong> {p.team?.name || p.team?.short || "[brak]"}</p>
-                  <button className='usuwator' onClick={() => handleDelete(p._id)}>🗑</button>
-                  <button onClick={() => startEdit(p)} className='edycja'>Edytuj</button>
+                  {keycloak.tokenParsed?.realm_access?.roles.includes("admin") && (
+                    <>
+                      <button className='usuwator' onClick={() => handleDelete(p._id)}><img src='/bin.png'/></button>
+                      <button onClick={() => startEdit(p)} className='edycja'>Edytuj</button>
+                    </>
+                  )}
+
                 </div>
               )
             )}
@@ -144,11 +150,19 @@ function App() {
       <div className="App">
         <nav style={{ marginBottom: "2rem" }}>
           <Link to="/" className='nav-link'> Strona główna</Link> |
-          <Link to="/add-player" className='nav-link'> Dodaj gracza</Link> |
-          <Link to="/add-team" className='nav-link'> Dodaj team do bazy</Link> |
+          {keycloak.tokenParsed?.realm_access?.roles.includes("admin") && (
+            <>
+              <Link to="/add-player" className='nav-link'> Dodaj gracza</Link> |
+              <Link to="/add-team" className='nav-link'> Dodaj team do bazy</Link> |
+            </>
+          )}
+
           <Link to="/teams" className='nav-link'> Lista drużyn</Link> |
           <Link to="/stats" className='nav-link'> Statystyki</Link> |
-          <button onClick={() => keycloak.logout()} className='nav-link'>Wyloguj</button>
+          {keycloak.tokenParsed?.realm_access?.roles.includes("admin") && (
+            <Link to="/admin" className='nav-link'> Panel Admina</Link>
+          )}
+          <button onClick={() => keycloak.logout()} className='nav-link logout'>Wyloguj</button>
         </nav>
         <Routes>
           <Route path="/" element={<PlayerList />} />
@@ -156,6 +170,7 @@ function App() {
           <Route path="/add-team" element={<RequireRole role="admin"><AddTeam /></RequireRole>} />
           <Route path="/teams" element={<TeamList />} />
           <Route path="/stats" element={<StatsPage />} />
+          <Route path="/admin" element={<RequireRole role="admin"><AdminPanel /></RequireRole>} />
         </Routes>
       </div>
     </Router>

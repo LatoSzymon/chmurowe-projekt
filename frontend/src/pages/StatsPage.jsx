@@ -12,10 +12,6 @@ function StatsPage() {
   useEffect(() => {
     fetch("/stats/roles", { headers: { Authorization: `Bearer ${keycloak.token}` } })
       .then(res => res.json()).then(setRoles);
-    fetch("/stats/orphans/players", { headers: { Authorization: `Bearer ${keycloak.token}` } })
-      .then(res => res.json()).then(data => setOrphans(data.players || []));
-    fetch("/stats/orphans/teams", { headers: { Authorization: `Bearer ${keycloak.token}` } })
-      .then(res => res.json()).then(data => setTeamsWithoutPlayers(data.teams || []));
     fetch("/stats/countries", { headers: { Authorization: `Bearer ${keycloak.token}` } })
       .then(res => res.json()).then(setCountries);
     fetch("/stats/teams/count", { headers: { Authorization: `Bearer ${keycloak.token}` } })
@@ -37,30 +33,7 @@ function StatsPage() {
           ))}
         </ul>
       </section>
-
-      <section>
-        <h2>Gracze bez drużyn</h2>
-        <ul className="stats-list">
-          {orphans.map(p => (
-            <li key={p._id} className="stats-item">
-              {p.nickname} ({p.role}, {p.country})
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section>
-        <h2>Drużyny bez graczy</h2>
-        <ul className="stats-list">
-          {teamsWithoutPlayers.map(t => (
-            <li key={t._id} className="stats-item">
-              <img src={t.logo || "/logoLol.png"} alt={t.short} className="team-icon" />
-              {t.name} ({t.short}) – {t.region}
-            </li>
-          ))}
-        </ul>
-      </section>
-
+      
       <section>
         <h2>Gracze według kraju</h2>
         <ul className="stats-list">

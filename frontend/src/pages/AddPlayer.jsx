@@ -3,6 +3,8 @@ import { useKeycloak } from '@react-keycloak/web';
 
 const AddPlayer = () => {
     const { keycloak } = useKeycloak();
+    console.log("Token:", keycloak.token);
+
 
     const [form, setForm] = useState({
         name: '',

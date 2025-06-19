@@ -72,6 +72,13 @@ nav {
   margin-top: 10px;
 }
 
+.usuwator img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 .players-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -249,3 +256,51 @@ form button:hover {
   font-weight: bold;
   color: #00ffff;
 }
+
+.admin-panel {
+  background-color: #141414;
+  padding: 2rem;
+  border-radius: 15px;
+  border: 2px solid #00ffff70;
+  max-width: 800px;
+  margin: 2rem auto;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+}
+
+.admin-panel h1 {
+  color: #00ffff;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.admin-panel ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.admin-panel li {
+  padding: 0.5rem 1rem;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.1);
+}
+
+.nav-link.logout {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-left: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: none;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link.logout:hover {
+  background-color: #cc0000;
+}
+

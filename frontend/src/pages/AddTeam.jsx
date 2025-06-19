@@ -3,6 +3,10 @@ import { useKeycloak } from '@react-keycloak/web';
 
 const AddTeam = () => {
   const { keycloak } = useKeycloak();
+  console.log(keycloak.tokenParsed?.realm_access?.roles)
+  console.log("Token:", keycloak.token);
+
+
 
   const [form, setForm] = useState({
     name: "",
