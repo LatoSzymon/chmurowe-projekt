@@ -10,6 +10,10 @@ INSTRUKCJA ODPALENIA:
 (komendy uruchamiane w głównym katalogu projektu)
 
 1. Upewnij się że kubernetes jest włączony (kubectl musi działać)
+2. Jeśli jeszcze nie masz, zainstaluj ingressa 
+
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
+
 2. Zbuduj obrazy dockerowe:
     docker build -t frontend:latest ./frontend
     docker build -t data-service:latest ./data-service

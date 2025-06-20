@@ -35,9 +35,9 @@ spec:
               value: edge
             - name: KC_HOSTNAME_STRICT
               value: "false"
-            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+            - name: KEYCLOAK_ADMIN
               value: admin
-            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+            - name: KEYCLOAK_ADMIN_PASSWORD
               value: admin
             - name: KEYCLOAK_IMPORT
               value: /opt/keycloak/data/import/realm-export.json

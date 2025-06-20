@@ -169,7 +169,7 @@ function App() {
           <Route path="/add-player" element={<RequireRole role="admin"><AddPlayer /></RequireRole>} />
           <Route path="/add-team" element={<RequireRole role="admin"><AddTeam /></RequireRole>} />
           <Route path="/teams" element={<TeamList />} />
-          <Route path="/stats" element={<StatsPage />} />
+          <Route path="/statistics" element={<StatsPage />} />
           <Route path="/admin" element={<RequireRole role="admin"><AdminPanel /></RequireRole>} />
         </Routes>
       </div>
